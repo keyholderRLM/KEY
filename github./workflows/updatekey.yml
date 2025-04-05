@@ -1,1 +1,31 @@
 
+name: Update Freemium Key
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs every day at midnight UTC
+  workflow_dispatch:     # Allows manual triggering
+
+jobs:
+  update-key:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Generate new key
+        id: generate_key
+        run: |
+          # Example key generation: a key prefixed with "RLMKEY-" and the current Unix timestamp.
+          NEW_KEY="RLMKEY-$(date +%s)"
+          echo "Generated key: ${NEW_KEY}"
+          echo "${NEW_KEY}" > latest_freemium_key.txt
+
+      - name: Commit new key
+        run: |
+          # Configure git with your details (update with your actual email and name)
+          git config --local user.email "edeadaedad@gmail.com"
+          git config --local user.name "keyholderRLM"
+          git add latest_freemium_key.txt
+          git commit -m "Auto-update freemium key to $(date)"
+          git push
